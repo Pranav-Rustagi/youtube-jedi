@@ -1,5 +1,5 @@
 const usage = [{
-    cmd: "video [options] <url>",
+    cmd: "video [options] <video_url>",
     desc: "To download a youtube video"
 // }, {
 //     cmd: "playlist [options] <youtube playlist url>",

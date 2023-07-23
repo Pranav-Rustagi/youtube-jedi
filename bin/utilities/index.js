@@ -32,6 +32,15 @@ const parseArgv = () => {
     return args;
 }
 
+
+const getFileName = (title, id) => {
+    if(title !== undefined) {
+        return title.trim();
+    }
+    return "jedi-" + id;
+}
+
 module.exports = {
-    parseArgv
+    parseArgv,
+    getFileName
 };

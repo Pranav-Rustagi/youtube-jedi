@@ -4,7 +4,7 @@ const { version, author } = require("./../package.json");
 const chalk = require("chalk");
 const { parseArgv } = require("./utilities");
 const { usage, options } = require("./constants");
-const { displayVideoInfo } = require("./download");
+const { displayVideoInfo, downloadVideo } = require("./download");
 
 (async() => {
     console.info(`\n${chalk.bold.blue("Welcome to youtube-jedi")} ${chalk.bold.whiteBright("v" + version)} ${chalk.white("by")} ${chalk.bold.blue(author)} 😁\n`);
@@ -34,9 +34,8 @@ const { displayVideoInfo } = require("./download");
         if(args.flags.info) {
             await displayVideoInfo(args.url);
         } else {
-            
+            downloadVideo(args.url, args.flags);
         }
-        // call download info function from downloads
     }
 
 })();

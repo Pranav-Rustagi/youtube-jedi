@@ -35,7 +35,7 @@ const parseArgv = () => {
 
 const getFileName = (title, id) => {
     if(title !== undefined) {
-        return title.trim();
+        return title;
     }
     return "jedi-" + id;
 }

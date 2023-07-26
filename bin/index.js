@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+require('dotenv').config();
 const { version, author } = require("./../package.json");
 const chalk = require("chalk");
 const { parseArgv } = require("./utilities");
@@ -34,7 +35,7 @@ const { displayVideoInfo, downloadVideo } = require("./download");
         if(args.flags.info) {
             await displayVideoInfo(args.url);
         } else {
-            downloadVideo(args.url, args.flags);
+            await downloadVideo(args.url, args.flags);
         }
     }
 

@@ -5,12 +5,18 @@ const { getFileName } = require("../utilities");
 
 
 const fetchVideoInfo = async (url) => {
-    const videoId = ytdl.getURLVideoID(url);
-    if (ytdl.validateURL(url) && ytdl.validateID(videoId)) {
-        const info = await ytdl.getInfo(url);
-        return info.videoDetails;
+    try {
+        const videoId = ytdl.getURLVideoID(url);
+        if (ytdl.validateURL(url) && ytdl.validateID(videoId)) {
+            const info = await ytdl.getInfo(url);
+            return info.videoDetails;
+        }
+    } catch (err) {
+        if(err.code !== "ENOTFOUND") {
+            return null;
+        }
+        return err;
     }
-    return null;
 }
 
 const displayVideoInfo = async (url) => {
@@ -18,6 +24,9 @@ const displayVideoInfo = async (url) => {
 
     if (data === null) {
         console.error(`\n${chalk.bold.redBright("Invalid URL!!!")} 😫\n\nPlease try with a valid URL\n`);
+        return;
+    } else if (data instanceof Error && data.code === "ENOTFOUND") {
+        console.error(`\n${chalk.bold.redBright("Internet connection unavailable!!!")} 😫\n\nPlease try again later\n`);
         return;
     }
 
@@ -42,7 +51,10 @@ const downloadVideo = async (url, options, video_data) => {
         video_data = await fetchVideoInfo(url);
 
         if (video_data === null) {
-            console.error(`\n${chalk.bold.redBright("Invalid URL!!!")} 😫\n\nPlease try with a valid URL\n`);
+            console.error(`\n${chalk.bold.redBright("Invalid URL!!!")} 😫\nPlease try with a valid URL\n`);
+            return;
+        } else if (video_data instanceof Error && video_data.code === "ENOTFOUND") {
+            console.error(`\n${chalk.bold.redBright("Internet connection unavailable!!!")} 😫\n\nPlease try again later\n`);
             return;
         }
     }

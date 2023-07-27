@@ -10,37 +10,38 @@ const parseArgv = () => {
     }
 
     if (argvLen < 4) {
-        return null;
+        throw new Error("INVALID_CMD");
     }
 
     if (argv[2] !== "video" && argv[2] !== "playlist") {
-        return null;
+        throw new JediError("INVALID_CMD");
     }
 
     args.type = argv[2];
     args.url = argv[argvLen - 1];
 
     for (let i = 3; i < argvLen - 1; i++) {
-        if (argv[i] === "-i" || argv[i] === "--info") {
-            args.flags.info = true;
-            return args;
-        } else {
-            return null;
+        const [flagName, flagValue] = argv[i].split("=");
+
+        if(flagName === "-i" || flagName === "--info") {
+            if(flagValue === undefined) {
+                args.flags.info = true;
+                return args;
+            }
+            throw new Error("INVALID_CMD");
+        } else if(flagName === "-q" || flagName === "quality") {
+            if(flagValue === undefined) {
+                throw new Error("INVALID_CMD");
+            } else if(!flagValue in ["1080p", "720p", "480p", "360p", "240p", "144p"]) {
+                throw new Error("RESOLUTION_NOT_SUPPORTED");
+            }
+            args.flags.quality = flagValue;
         }
     }
 
     return args;
 }
 
-
-const getFileName = (title, id) => {
-    if(title !== undefined) {
-        return title;
-    }
-    return "jedi-" + id;
-}
-
 module.exports = {
-    parseArgv,
-    getFileName
+    parseArgv
 };

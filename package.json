@@ -30,7 +30,6 @@
   "author": "Pranav Rustagi",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^4.1.2",
     "dotenv": "^16.3.1",
     "ytdl-core": "^4.11.5"
   }

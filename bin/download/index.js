@@ -1,6 +1,6 @@
-const chalk = require("chalk");
 const fs = require("fs");
 const ytdl = require("ytdl-core");
+const { ColorLog, getFileName } = require("../utilities");
 
 
 const fetchVideoInfo = async (url) => {
@@ -22,35 +22,36 @@ const fetchVideoInfo = async (url) => {
 const displayVideoInfo = async (url) => {
     const data = await fetchVideoInfo(url);
 
-    console.info(`\n${chalk.bold.bgBlueBright(" Title ")}\n${data.title}`);
-    console.info(`\n${chalk.bold.bgBlueBright(" Description ")}\n${data.description}`);
-    console.info(`\n${chalk.bold.bgBlueBright(" Category ")}\n${data.category}`);
-    console.info(`\n${chalk.bold.bgBlueBright(" Channel name ")}\n${data.author.name}`);
-    console.info(`\n${chalk.bold.bgBlueBright(" Channel link ")}\n${data.author.channel_url}`);
-    console.info(`\n${chalk.bold.bgBlueBright(" Upload date ")}\n${data.uploadDate}`);
-    console.info(`\n${chalk.bold.bgBlueBright(" Length ")}\n${data.lengthSeconds} seconds`);
+    console.info(`\n${ColorLog.label(" Title ")}\n${data.title}`);
+    console.info(`\n${ColorLog.label(" Description ")}\n${data.description}`);
+    console.info(`\n${ColorLog.label(" Category ")}\n${data.category}`);
+    console.info(`\n${ColorLog.label(" Channel name ")}\n${data.author.name}`);
+    console.info(`\n${ColorLog.label(" Channel link ")}\n${data.author.channel_url}`);
+    console.info(`\n${ColorLog.label(" Upload date ")}\n${data.uploadDate}`);
+    console.info(`\n${ColorLog.label(" Length ")}\n${data.lengthSeconds} seconds`);
 
     if (data.likes !== null && data.dislikes !== null) {
-        console.info(`\n${chalk.bold.bgBlueBright(" Likes ")}\n${data.likes}`);
-        console.info(`\n${chalk.bold.bgBlueBright(" Dislikes ")}\n${data.dislikes}`);
+        console.info(`\n${ColorLog.label(" Likes ")}\n${data.likes}`);
+        console.info(`\n${ColorLog.label(" Dislikes ")}\n${data.dislikes}`);
     }
 
-    console.info(`\n${chalk.bold.bgBlueBright(" Views ")}\n${data.viewCount}\n`);
+    console.info(`\n${ColorLog.label(" Views ")}\n${data.viewCount}\n`);
 }
 
 const downloadVideo = async (url, options, video_data) => {
     if (video_data === undefined) {
         video_data = await fetchVideoInfo(url);
     }
-    const title = video_data.title;
+    
+    const title = getFileName(video_data.title);
 
-    console.info("\n" + chalk.bold.whiteBright(`Downloading "${title}"`) + "\n");
+    console.info(`\n${ColorLog.bold(`Downloading "${video_data.title}"`)}\n`);
 
     await new Promise((resolve) => {
         const stream = ytdl(url, {
             quality: 'highest', filter: 'audioandvideo'
         }).on("error", () => {
-            console.error(`\n${chalk.bold.redBright("Error downloading video!!!")} 😫\n`);
+            console.error(`\n${ColorLog.error("Error downloading video!!!", true)} 😫\n`);
         }).on("progress", (_, downloaded, total) => {
             const progress = (downloaded / total * 100).toFixed(2);
 
@@ -58,9 +59,10 @@ const downloadVideo = async (url, options, video_data) => {
             const notdone = 100 - done;
 
             process.stdout.write("\r\x1B[?25l");
-            process.stdout.write(chalk.bgBlueBright(" ".repeat(done)));
-            process.stdout.write(chalk.bold.bgGrey("▒".repeat(notdone)));
-            process.stdout.write(chalk.bold.whiteBright(` ${progress}% `));
+
+            process.stdout.write(ColorLog.label(" ".repeat(done)));
+            process.stdout.write(ColorLog.bgGray("▒".repeat(notdone)));
+            process.stdout.write(ColorLog.bold(` ${progress}% `));
 
         }).on("end", () => {
             console.log("\n\nDownload complete!!!");

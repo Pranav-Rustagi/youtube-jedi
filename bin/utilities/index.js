@@ -1,5 +1,39 @@
 const { argv } = process;
 
+class ColorLog {
+    static primaryCode = "\x1b[94m";
+    static bgPrimaryCode = "\x1b[104m";
+    static successCode = "\x1b[92m";
+    static errorCode = "\x1b[91m";
+    static bgGrayCode = "\x1b[100m";
+    static resetCode = "\x1b[0m";
+    static boldCode = "\x1b[1m";
+
+    static error(msg, bold) {
+        return `${this.errorCode}${bold ? this.boldCode : ""}${msg}${this.resetCode}`;
+    }
+
+    static success(msg, bold) {
+        return `${this.successCode}${bold ? this.boldCode : ""}${msg}${this.resetCode}`;
+    }
+
+    static label(msg) {
+        return `${this.bgPrimaryCode}${this.boldCode}${msg}${this.resetCode}`;
+    }
+
+    static primary(msg, bold) {
+        return `${this.primaryCode}${bold ? this.boldCode : ""}${msg}${this.resetCode}`;
+    }
+
+    static bold(msg) {
+        return `${this.boldCode}${msg}${this.resetCode}`;
+    }
+
+    static bgGray(msg) {
+        return `${this.bgGrayCode}${msg}${this.resetCode}`;
+    }
+}
+
 const parseArgv = () => {
     const args = { flags: { help: false, info: false } };
     const argvLen = argv.length;
@@ -42,6 +76,14 @@ const parseArgv = () => {
     return args;
 }
 
+const getFileName = (title) => {
+    const invalidCharsRegex = /[/\\:?*"<>|]/g;
+    const fileName = title.replace(invalidCharsRegex, "_").trim().substring(0, 255);
+    return fileName;
+}
+
 module.exports = {
-    parseArgv
+    parseArgv,
+    ColorLog,
+    getFileName
 };

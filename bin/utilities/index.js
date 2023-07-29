@@ -66,8 +66,6 @@ const parseArgv = () => {
         } else if(flagName === "-q" || flagName === "quality") {
             if(flagValue === undefined) {
                 throw new Error("INVALID_CMD");
-            } else if(!flagValue in ["1080p", "720p", "480p", "360p", "240p", "144p"]) {
-                throw new Error("RESOLUTION_NOT_SUPPORTED");
             }
             args.flags.quality = flagValue;
         }
@@ -82,8 +80,40 @@ const getFileName = (title) => {
     return fileName;
 }
 
+const getUserInput = async (question) => {
+    const readline = require("readline").createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    return new Promise((resolve, reject) => {
+        readline.question(question, (answer) => {
+            readline.close();
+            resolve(answer);
+        });
+    });
+}
+
+const getAvailableFormats = (formats) => {
+    const availableFormats = formats.reduce((resultant, format) => {
+        if(format.hasVideo && format.container === "mp4" && format.qualityLabel !== null && resultant.includes(format.qualityLabel) === false) {
+            resultant.push(format.qualityLabel);
+        }
+        return resultant;
+    }, []);
+
+    availableFormats.sort((a, b) => {
+        const aRes = a.split("p")[0];
+        const bRes = b.split("p")[0];
+        return +bRes - +aRes;
+    });
+    return availableFormats;
+}
+
 module.exports = {
     parseArgv,
+    getFileName,
+    getUserInput,
+    getAvailableFormats,
     ColorLog,
-    getFileName
 };

@@ -1,6 +1,6 @@
 const fs = require("fs");
 const ytdl = require("ytdl-core");
-const { ColorLog, getFileName } = require("../utilities");
+const { ColorLog, getFileName, getUserInput, getAvailableFormats } = require("../utilities");
 
 
 const fetchVideoInfo = async (url) => {
@@ -8,7 +8,7 @@ const fetchVideoInfo = async (url) => {
         const videoId = ytdl.getURLVideoID(url);
         if (ytdl.validateURL(url) && ytdl.validateID(videoId)) {
             const info = await ytdl.getInfo(url);
-            return info.videoDetails;
+            return info;
         }
     } catch (err) {
         if (err.code === "ENOTFOUND") {
@@ -20,7 +20,7 @@ const fetchVideoInfo = async (url) => {
 }
 
 const displayVideoInfo = async (url) => {
-    const data = await fetchVideoInfo(url);
+    const data = await fetchVideoInfo(url).videoDetails;
 
     console.info(`\n${ColorLog.label(" Title ")}\n${data.title}`);
     console.info(`\n${ColorLog.label(" Description ")}\n${data.description}`);
@@ -42,16 +42,28 @@ const downloadVideo = async (url, options, video_data) => {
     if (video_data === undefined) {
         video_data = await fetchVideoInfo(url);
     }
+
+    const formats = video_data.formats;
+    const availableFormats = getAvailableFormats(formats);
+
+    if(options.quality === undefined) {
+        options.quality = await getUserInput(`Please enter the video quality ${ColorLog.bold("( " + availableFormats.join(" | ") + " )", true)}: `);
+    }
+
+    if(availableFormats.includes(options.quality) === false) {
+        throw new Error("RESOLUTION_NOT_SUPPORTED");
+    }
     
-    const title = getFileName(video_data.title);
+    const title = getFileName(video_data.videoDetails.title);
 
-    console.info(`\n${ColorLog.bold(`Downloading "${video_data.title}"`)}\n`);
+    console.info(`\n${ColorLog.bold(`Downloading "${video_data.videoDetails.title}"`)}\n`);
 
-    await new Promise((resolve) => {
+    await new Promise((resolve, reject) => {
         const stream = ytdl(url, {
             quality: 'highest', filter: 'audioandvideo'
-        }).on("error", () => {
+        }).on("error", (err) => {
             console.error(`\n${ColorLog.error("Error downloading video!!!", true)} 😫\n`);
+            reject(err);
         }).on("progress", (_, downloaded, total) => {
             const progress = (downloaded / total * 100).toFixed(2);
 

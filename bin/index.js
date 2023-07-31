@@ -7,6 +7,7 @@ const { displayVideoInfo, downloadVideo } = require("./download");
 
 (async () => {
     try {
+        process.stdout.write("\x1B[?25l");
         const args = parseArgv();
 
         if (args.flags.help) {
@@ -48,6 +49,12 @@ const { displayVideoInfo, downloadVideo } = require("./download");
                 console.error(`\n${ColorLog.error("Invalid URL!!!")} 😫\n\nPlease try with a valid URL\n`);
                 return;
             }
+            case "DOWNLOAD_FAILED": {
+                console.error(`\n${ColorLog.error("Download failed due to some reason!!!")} 😫\n\nPlease try again later\n`);
+                return;
+            }
         }
+    } finally {
+        process.stdout.write("\x1B[?25h");
     }
 })();

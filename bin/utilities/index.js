@@ -96,7 +96,7 @@ const getUserInput = async (question) => {
 
 const getAvailableFormats = (formats) => {
     const availableFormats = formats.reduce((resultant, format) => {
-        if(format.hasVideo && format.container === "mp4" && format.qualityLabel !== null && resultant.includes(format.qualityLabel) === false) {
+        if(format.hasVideo && format.qualityLabel !== null && resultant.includes(format.qualityLabel) === false) {
             resultant.push(format.qualityLabel);
         }
         return resultant;

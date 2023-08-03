@@ -35,7 +35,7 @@ class ColorLog {
 }
 
 const parseArgv = () => {
-    const args = { flags: { help: false, info: false } };
+    const args = { flags: { help: false, info: false, audioonly: false } };
     const argvLen = argv.length;
 
     if (argvLen == 2 || argv[2] === "-h" || argv[2] === "--help") {
@@ -68,6 +68,8 @@ const parseArgv = () => {
                 throw new Error("INVALID_CMD");
             }
             args.flags.quality = flagValue;
+        } else if(flagName === "-ao" || flagName === "audioonly") {
+            args.flags.audioonly = true;
         }
     }
 

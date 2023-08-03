@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-require('dotenv').config();
 const { parseArgv, ColorLog } = require("./utilities");
 const { usage, options } = require("./constants");
 const { displayVideoInfo, downloadVideo } = require("./download");
@@ -51,6 +50,10 @@ const { displayVideoInfo, downloadVideo } = require("./download");
             }
             case "DOWNLOAD_FAILED": {
                 console.error(`\n${ColorLog.error("Download failed due to some reason!!!")} 😫\n\nPlease try again later\n`);
+                return;
+            }
+            case "FILE_NOT_FOUND": {
+                console.error(`\n${ColorLog.error("File not found!!!")} 😫\n\nPlease try again later\n`);
                 return;
             }
         }

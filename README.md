@@ -26,7 +26,7 @@ yarn global add youtube-jedi
 - **View details of a youtube video**
 
     ```bash
-    jedi --info <youtube-video-url>
+    jedi video --info <youtube-video-url>
     ```
 - **Download a youtube video**
 
@@ -51,12 +51,12 @@ yarn global add youtube-jedi
 
 ## youtube-jedi options
 
-| Option | Use | Command syntax |
-| ---- | ---- | ---- |
-| --info, -i | View details of a youtube video | jedi --info <video_url> |
-| --quality, -q | Download a youtube video with a specific quality | jedi video --quality=\<quality> <video_url> |
-| --audioonly, -ao | Download just the audio of a youtube video | jedi video --audioonly <video_url> |
-| --help, -h | View help | jedi --help |
+| Option | Alias | Use | Command syntax |
+| ---- | ------- | ---- | ---- |
+| --info | -i | View details of a youtube video | jedi video --info \<video_url\> |
+| --quality | -q | Download a youtube video with a specific quality | jedi video --quality=\<quality\> \<video_url\> |
+| --audioonly | -ao | Download just the audio of a youtube video | jedi video --audioonly \<video_url\> |
+| --help | -h | View help | jedi --help |
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)

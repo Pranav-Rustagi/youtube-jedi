@@ -1,6 +1,6 @@
 {
   "name": "youtube-jedi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI to download youtube videos/playlists with ease in chosen format",
   "main": "bin/index.js",
   "bin": {
@@ -11,8 +11,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "\"https://github.com/Pranav-Rustagi/youtube-jedi\""
+    "url": "git://github.com/Pranav-Rustagi/youtube-jedi.git"
   },
+  "homepage": "https://github.com/Pranav-Rustagi/youtube-jedi",
   "keywords": [
     "nodejs",
     "javascript",

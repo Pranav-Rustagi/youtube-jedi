@@ -1,6 +1,6 @@
 {
   "name": "youtube-jedi",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "CLI to download youtube videos/playlists with ease in chosen format",
   "main": "bin/index.js",
   "bin": {

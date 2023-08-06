@@ -12,12 +12,12 @@ const { displayVideoInfo, downloadVideo } = require("./download");
         if (args.flags.help) {
             console.info(ColorLog.label("\n Usage   "));
             for (let u of usage) {
-                console.info(`   jedi ${u.cmd.padEnd(30)} ${u.desc}`);
+                console.info(`   jedi ${u.cmd.padEnd(35)} ${u.desc}`);
             }
             
             console.info(ColorLog.label("\n Options "));
             for (let o of options) {
-                console.info(`   ${o.option.padEnd(35)} ${o.desc}`);
+                console.info(`   ${o.option.padEnd(40)} ${o.desc}`);
             }
             console.log();
             return;

@@ -1,4 +1,6 @@
 const { argv } = process;
+const moduleData = require("../../package.json");
+const { usage, options } = require("../constants");
 
 class ColorLog {
     static primaryCode = "\x1b[94m";
@@ -8,25 +10,30 @@ class ColorLog {
     static bgGrayCode = "\x1b[100m";
     static resetCode = "\x1b[0m";
     static boldCode = "\x1b[1m";
+    static warningCode = "\x1b[93m";
 
-    static error(msg, bold) {
-        return `${this.errorCode}${bold ? this.boldCode : ""}${msg}${this.resetCode}`;
-    }
-
-    static success(msg, bold) {
-        return `${this.successCode}${bold ? this.boldCode : ""}${msg}${this.resetCode}`;
+    static bold(msg) {
+        return `${this.boldCode}${msg}${this.resetCode}`;
     }
 
     static label(msg) {
         return `${this.bgPrimaryCode}${this.boldCode}${msg}${this.resetCode}`;
     }
 
-    static primary(msg, bold) {
+    static primary(msg, bold = false) {
         return `${this.primaryCode}${bold ? this.boldCode : ""}${msg}${this.resetCode}`;
     }
 
-    static bold(msg) {
-        return `${this.boldCode}${msg}${this.resetCode}`;
+    static error(msg, bold = false) {
+        return `${this.errorCode}${bold ? this.boldCode : ""}${msg}${this.resetCode}`;
+    }
+
+    static success(msg, bold = false) {
+        return `${this.successCode}${bold ? this.boldCode : ""}${msg}${this.resetCode}`;
+    }
+
+    static warn(msg) {
+        return `${this.warningCode}${msg}${this.resetCode}`;
     }
 
     static bgGray(msg) {
@@ -57,23 +64,36 @@ const parseArgv = () => {
     for (let i = 3; i < argvLen - 1; i++) {
         const [flagName, flagValue] = argv[i].split("=");
 
-        if(flagName === "-i" || flagName === "--info") {
-            if(flagValue === undefined) {
+        if (flagName === "-i" || flagName === "--info") {
+            if (flagValue === undefined) {
                 args.flags.info = true;
                 return args;
             }
             throw new Error("INVALID_CMD");
-        } else if(flagName === "-q" || flagName === "quality") {
-            if(flagValue === undefined) {
+        } else if (flagName === "-q" || flagName === "quality") {
+            if (flagValue === undefined) {
                 throw new Error("INVALID_CMD");
             }
             args.flags.quality = flagValue;
-        } else if(flagName === "-ao" || flagName === "audioonly") {
+        } else if (flagName === "-ao" || flagName === "audioonly") {
             args.flags.audioonly = true;
         }
     }
 
     return args;
+}
+
+const showHelp = () => {
+    console.info(ColorLog.label("\n Usage   "));
+    for (let u of usage) {
+        console.info(`   jedi ${u.cmd.padEnd(35)} ${u.desc}`);
+    }
+
+    console.info(ColorLog.label("\n Options "));
+    for (let o of options) {
+        console.info(`   ${o.option.padEnd(40)} ${o.desc}`);
+    }
+    console.log();
 }
 
 const getFileName = (title) => {
@@ -98,7 +118,7 @@ const getUserInput = async (question) => {
 
 const getAvailableFormats = (formats) => {
     const availableFormats = formats.reduce((resultant, format) => {
-        if(format.hasVideo && format.qualityLabel !== null && resultant.includes(format.qualityLabel) === false) {
+        if (format.hasVideo && format.qualityLabel !== null && resultant.includes(format.qualityLabel) === false) {
             resultant.push(format.qualityLabel);
         }
         return resultant;
@@ -112,10 +132,34 @@ const getAvailableFormats = (formats) => {
     return availableFormats;
 }
 
+
+const getLatestVersion = async () => {
+    try {
+        const res = await fetch("https://registry.npmjs.com/youtube-jedi/latest");
+        const data = await res.json();
+        return data.version;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
+
+const checkForUpdate = async () => {
+    const latestVersion = await getLatestVersion();
+    const currentVersion = moduleData.version;
+
+    if (latestVersion !== null && latestVersion !== currentVersion) {
+        console.log(`\n${ColorLog.warn("A new version of youtube-jedi is available!!!")} 😎\n\nRun ${ColorLog.bold(" npm i -g youtube-jedi ")} to update\n`);
+    }
+}
+
 module.exports = {
     parseArgv,
     getFileName,
     getUserInput,
     getAvailableFormats,
+    getLatestVersion,
+    checkForUpdate,
+    showHelp,
     ColorLog,
 };

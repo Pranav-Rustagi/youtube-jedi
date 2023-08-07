@@ -1,25 +1,18 @@
 #!/usr/bin/env node
 
-const { parseArgv, ColorLog } = require("./utilities");
-const { usage, options } = require("./constants");
+const { parseArgv, ColorLog, checkForUpdate, showHelp } = require("./utilities");
 const { displayVideoInfo, downloadVideo } = require("./download");
 
 (async () => {
     try {
         process.stdout.write("\x1B[?25l");
+        
+        await checkForUpdate();
+
         const args = parseArgv();
 
         if (args.flags.help) {
-            console.info(ColorLog.label("\n Usage   "));
-            for (let u of usage) {
-                console.info(`   jedi ${u.cmd.padEnd(35)} ${u.desc}`);
-            }
-            
-            console.info(ColorLog.label("\n Options "));
-            for (let o of options) {
-                console.info(`   ${o.option.padEnd(40)} ${o.desc}`);
-            }
-            console.log();
+            showHelp();
             return;
         }
 

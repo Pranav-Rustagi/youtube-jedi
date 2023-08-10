@@ -70,12 +70,12 @@ const parseArgv = () => {
                 return args;
             }
             throw new Error("INVALID_CMD");
-        } else if (flagName === "-q" || flagName === "quality") {
+        } else if (flagName === "-q" || flagName === "--quality") {
             if (flagValue === undefined) {
                 throw new Error("INVALID_CMD");
             }
             args.flags.quality = flagValue;
-        } else if (flagName === "-ao" || flagName === "audioonly") {
+        } else if (flagName === "-ao" || flagName === "--audioonly") {
             args.flags.audioonly = true;
         }
     }

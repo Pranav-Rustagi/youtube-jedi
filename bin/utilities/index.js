@@ -54,8 +54,8 @@ const parseArgv = () => {
         throw new Error("INVALID_CMD");
     }
 
-    if (argv[2] !== "video" && argv[2] !== "playlist") {
-        throw new JediError("INVALID_CMD");
+    if (argv[2] !== "video") {
+        throw new Error("INVALID_CMD");
     }
 
     args.type = argv[2];
@@ -153,6 +153,17 @@ const checkForUpdate = async () => {
     }
 }
 
+
+const plotProgress = (progress) => {
+    progress = progress;
+    const done = Math.round(progress);
+
+    process.stdout.write("\r\x1B[?25l");
+    process.stdout.write(ColorLog.label(" ".repeat(done)));
+    process.stdout.write(ColorLog.bgGray("▒".repeat(100 - done)));
+    process.stdout.write(ColorLog.bold(` ${progress.toFixed(2)}%`));
+}
+
 module.exports = {
     parseArgv,
     getFileName,
@@ -161,5 +172,6 @@ module.exports = {
     getLatestVersion,
     checkForUpdate,
     showHelp,
+    plotProgress,
     ColorLog,
 };

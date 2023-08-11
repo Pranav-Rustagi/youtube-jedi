@@ -2,7 +2,9 @@ const fs = require("fs");
 const ytdl = require("ytdl-core");
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 const ffmpeg = require('fluent-ffmpeg');
-const { ColorLog, getFileName, getUserInput, getAvailableFormats } = require("../utilities");
+const { ColorLog, getFileName, getUserInput, getAvailableFormats, plotProgress } = require("../utilities");
+const puppeteer = require("puppeteer");
+const scrapePlaylist = require("../scraper");
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
@@ -82,15 +84,7 @@ const downloadVideo = async (url, options) => {
                 reject(err);
                 throw new Error("DOWNLOAD_FAILED");
             }).on("progress", (_, downloaded, total) => {
-                const progress = (downloaded / total * 100).toFixed(2);
-
-                const done = Math.round(progress);
-                const notdone = 100 - done;
-
-                process.stdout.write("\r\x1B[?25l");
-                process.stdout.write(ColorLog.label(" ".repeat(done)));
-                process.stdout.write(ColorLog.bgGray("▒".repeat(notdone)));
-                process.stdout.write(ColorLog.bold(` ${progress}% `));
+                plotProgress(downloaded / total * 100);
             }).on("end", () => {
                 resolve(audioStream);
             }).pipe(fs.createWriteStream(filename));
@@ -140,16 +134,7 @@ const downloadVideo = async (url, options) => {
                     fs.unlinkSync(`${title}.mp4`);
                     reject(err);
                 }).on("progress", (_, downloaded, total) => {
-                    const progress = (downloaded / total * 100).toFixed(2);
-
-                    const done = Math.round(progress);
-                    const notdone = 100 - done;
-
-                    process.stdout.write("\r\x1B[?25l");
-
-                    process.stdout.write(ColorLog.label(" ".repeat(done)));
-                    process.stdout.write(ColorLog.bgGray("▒".repeat(notdone)));
-                    process.stdout.write(ColorLog.bold(` ${progress}% `));
+                    plotProgress(downloaded / total * 100);
 
                 }).on("end", () => {
                     console.log("\n\nDownload complete!!!");
@@ -185,15 +170,7 @@ const downloadVideo = async (url, options) => {
                 reject(err);
                 throw new Error("DOWNLOAD_FAILED");
             }).on("progress", (_, downloaded, total) => {
-                const progress = (downloaded / total * 50).toFixed(2);
-
-                const done = Math.round(progress);
-                const notdone = 100 - done;
-
-                process.stdout.write("\r\x1B[?25l");
-                process.stdout.write(ColorLog.label(" ".repeat(done)));
-                process.stdout.write(ColorLog.bgGray("▒".repeat(notdone)));
-                process.stdout.write(ColorLog.bold(` ${progress}% `));
+                plotProgress(downloaded / total * 50);
             }).on("end", () => {
                 resolve(videoStream);
             }).pipe(fs.createWriteStream(videoOnlyFile));
@@ -206,15 +183,7 @@ const downloadVideo = async (url, options) => {
             reject(err);
             throw new Error("DOWNLOAD_FAILED");
         }).on("progress", (_, downloaded, total) => {
-            const progress = (50 + (downloaded / total * 50)).toFixed(2);
-
-            const done = Math.round(progress);
-            const notdone = 100 - done;
-
-            process.stdout.write("\r\x1B[?25l");
-            process.stdout.write(ColorLog.label(" ".repeat(done)));
-            process.stdout.write(ColorLog.bgGray("▒".repeat(notdone)));
-            process.stdout.write(ColorLog.bold(` ${progress}% `));
+            plotProgress(50 + (downloaded / total * 50));
         }).on("end", () => {
             resolve(audioStream);
         }).pipe(fs.createWriteStream(audioOnlyFile));;
@@ -254,7 +223,28 @@ const downloadVideo = async (url, options) => {
 }
 
 
+const fetchPlaylistInfo = async (url) => {
+    try {
+        const playlistData = await scrapePlaylist(url);
+        return playlistData;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
+
+const displayPlaylistInfo = async (url) => {
+    const playlistData = await fetchPlaylistInfo(url);
+    console.log(playlistData);
+}
+
+const downloadPlaylist = async (url, options) => {
+}
+
+
 module.exports = {
     displayVideoInfo,
-    downloadVideo
+    downloadVideo,
+    displayPlaylistInfo,
+    downloadPlaylist
 };

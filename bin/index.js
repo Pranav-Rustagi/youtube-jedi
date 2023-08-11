@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const { parseArgv, ColorLog, checkForUpdate, showHelp } = require("./utilities");
-const { displayVideoInfo, downloadVideo } = require("./download");
+const { displayVideoInfo, downloadVideo, displayPlaylistInfo, downloadPlaylist } = require("./download");
 
 (async () => {
     try {
@@ -21,6 +21,12 @@ const { displayVideoInfo, downloadVideo } = require("./download");
                 await displayVideoInfo(args.url);
             } else {
                 await downloadVideo(args.url, args.flags);
+            }
+        } else if(args.type === "playlist") {
+            if (args.flags.info) {
+                await displayPlaylistInfo(args.url);
+            } else {
+                await downloadPlaylist(args.url, args.flags);
             }
         }
     } catch ({ message }) {

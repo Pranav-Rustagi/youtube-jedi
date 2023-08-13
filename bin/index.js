@@ -55,6 +55,10 @@ const { displayVideoInfo, downloadVideo, displayPlaylistInfo, downloadPlaylist }
                 console.error(`\n${ColorLog.error("File not found!!!")} 😫\n\nPlease try again later\n`);
                 return;
             }
+            case "PLAYLIST_FETCH_FAILED": {
+                console.error(`\n${ColorLog.error("Failed to fetch playlist data!!!")} 😫\n\nPlease try again later\n`);
+                return;
+            }
         }
     } finally {
         process.stdout.write("\x1B[?25h");

@@ -54,7 +54,7 @@ const parseArgv = () => {
         throw new Error("INVALID_CMD");
     }
 
-    if (argv[2] !== "video") {
+    if (argv[2] !== "video" && argv[2] !== "playlist") {
         throw new Error("INVALID_CMD");
     }
 

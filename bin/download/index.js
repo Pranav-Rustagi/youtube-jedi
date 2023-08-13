@@ -20,6 +20,7 @@ const fetchVideoInfo = async (url) => {
         if (err.code === "ENOTFOUND") {
             throw new Error("ENOTFOUND");
         } else {
+            // console.log(err);
             throw new Error("INVALID_URL");
         }
     }
@@ -70,7 +71,7 @@ const downloadVideo = async (url, options) => {
             filter: "audioonly"
         });
 
-        if(audioOnlyFormat === undefined) {
+        if (audioOnlyFormat === undefined) {
             throw new Error("FILE_NOT_FOUND");
         }
 
@@ -222,23 +223,38 @@ const downloadVideo = async (url, options) => {
     });
 }
 
-
-const fetchPlaylistInfo = async (url) => {
-    try {
-        const playlistData = await scrapePlaylist(url);
-        return playlistData;
-    } catch (err) {
-        console.log(err);
-        return null;
-    }
-}
-
 const displayPlaylistInfo = async (url) => {
-    const playlistData = await fetchPlaylistInfo(url);
-    console.log(playlistData);
+    const data = await scrapePlaylist(url);
+    
+    console.info(`\n${ColorLog.label(" Title ")}\n${data.title}`);
+    console.info(`\n${ColorLog.label(" Channel Name ")}\n${data.channelName}`);
+    console.info(`\n${ColorLog.label(" Channel Link ")}\n${data.channelUrl}`);
+    console.info(`\n${ColorLog.label(" Video Count ")}\n${data.videoCount}`);
+    console.info(`\n${ColorLog.label(" Views ")}\n${data.viewCount}`);
+    console.info(`\n${ColorLog.label(" Last Updated ")}\n${data.lastUpdated}`);
+
+    console.info(`\n${ColorLog.label(" Videos ")}\n`);
+
+    console.info(`${ColorLog.bold("│‾" + '‾'.repeat(5) + "‾│‾" + '‾'.repeat(100) + "‾│‾" + '‾'.repeat(15) + "‾│‾" + '‾'.repeat(15) + "‾│")}`);
+    console.info(`${ColorLog.bold("│ " + "S.No.".padStart(5) + " │ " + "Title".padEnd(100) + " │ " + "Views".padStart(15) + " │ " + "Uploaded".padStart(15) + " │")}`);
+    console.info(`${ColorLog.bold("│_" + '_'.repeat(5) + "_│_" + '_'.repeat(100) + "_│_" + '_'.repeat(15) + "_│_" + '_'.repeat(15) + "_│")}`);
+
+
+    let ind = 1;
+    for (const video of data.videos) {
+        let { title, viewCount, uploaded } = video;
+        if (title.length > 100) title = title.substring(0, 95) + "...";
+
+        console.info(`${ColorLog.bold("│ " + '\u00A0'.repeat(5) + " │ " + '\u00A0'.repeat(100) + " │ " + '\u00A0'.repeat(15) + " │ " + '\u00A0'.repeat(15) + " │")}`);
+        console.info(`${ColorLog.bold("│ " + ind.toString().padStart(5) + " │ " + title.padEnd(100) + " │ " + viewCount.padStart(15) + " │ " + uploaded.padStart(15) + " │")}`);
+
+        ind++;
+    }
+    console.info(`${ColorLog.bold("│_" + '_'.repeat(5) + "_│_" + '_'.repeat(100) + "_│_" + '_'.repeat(15) + "_│_" + '_'.repeat(15) + "_│")}`);
 }
 
 const downloadPlaylist = async (url, options) => {
+    console.info("Feature coming soon...");
 }
 
 

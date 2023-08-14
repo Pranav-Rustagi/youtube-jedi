@@ -43,10 +43,10 @@ const displayVideoInfo = async (url) => {
         console.info(`\n${ColorLog.label(" Dislikes ")}\n${data.dislikes}`);
     }
 
-    console.info(`\n${ColorLog.label(" Views ")}\n${data.viewCount}\n`);
+    console.info(`\n${ColorLog.label(" Views ")}\n${data.viewCount}`);
 }
 
-const downloadVideo = async (url, options) => {
+const downloadVideo = async (url, options, directoryName) => {
     const video_data = await fetchVideoInfo(url);
     const formats = video_data.formats;
 
@@ -61,7 +61,7 @@ const downloadVideo = async (url, options) => {
         }
     }
 
-    const title = getFileName(video_data.videoDetails.title);
+    let title = getFileName(video_data.videoDetails.title);
 
     console.info(`\n${ColorLog.bold(`Downloading "${video_data.videoDetails.title}"`)}\n`);
 
@@ -75,7 +75,10 @@ const downloadVideo = async (url, options) => {
             throw new Error("FILE_NOT_FOUND");
         }
 
-        const filename = `${title}.${audioOnlyFormat.container}`;
+        let filename = `${title}.${audioOnlyFormat.container}`;
+        if (directoryName !== undefined) {
+            filename = `${directoryName}/${filename}`;
+        }
 
         const toConvert = audioOnlyFormat.container !== "mp3";
 
@@ -95,7 +98,6 @@ const downloadVideo = async (url, options) => {
             process.stdout.write("\n\nProcessing...");
 
             await new Promise((resolve, reject) => {
-                let dots = "";
                 const command = ffmpeg()
                     .input(filename)
                     .noVideo()
@@ -106,10 +108,8 @@ const downloadVideo = async (url, options) => {
                         reject(err);
                         throw new Error("DOWNLOAD_FAILED");
                     }).on("progress", () => {
-                        if (dots.length === 5) dots = "";
                         process.stdout.write("\r\x1B[?25l");
-                        process.stdout.write("Processing" + dots);
-                        dots += ".";
+                        process.stdout.write("Processing...");
                     }).on("end", () => {
                         process.stdout.write("\r\x1B[?25l");
                         process.stdout.write("Cleaning up...");
@@ -127,20 +127,25 @@ const downloadVideo = async (url, options) => {
         return format.hasVideo && format.hasAudio && format.qualityLabel === options.quality && format.container === "mp4";
     });
 
+    let newFileName = `${title}.mp4`;
+    if (directoryName !== undefined) {
+        newFileName = `${directoryName}/${newFileName}`;
+    }
+
     if (audioVideoFormat !== undefined) {
         await new Promise((resolve, reject) => {
             const stream = ytdl(url, { format: audioVideoFormat })
                 .on("error", (err) => {
                     console.error(`\n${ColorLog.error("Error downloading video!!!", true)} 😫\n`);
-                    fs.unlinkSync(`${title}.mp4`);
+                    fs.unlinkSync(newFileName);
                     reject(err);
                 }).on("progress", (_, downloaded, total) => {
                     plotProgress(downloaded / total * 100);
 
                 }).on("end", () => {
-                    console.log("\n\nDownload complete!!!");
+                    process.stdout.write("\n\nDownload complete!!!");
                     resolve(stream);
-                }).pipe(fs.createWriteStream(`${title}.mp4`));;
+                }).pipe(fs.createWriteStream(newFileName));;
         });
         return;
     }
@@ -161,8 +166,13 @@ const downloadVideo = async (url, options) => {
 
     const file_id = getFileName(video_data.videoDetails.videoId);
 
-    const videoOnlyFile = `jedi_vid_${file_id}.${videoOnlyFormat.container}`;
-    const audioOnlyFile = `jedi_aud_${file_id}.${audioOnlyFormat.container}`;
+    let videoOnlyFile = `jedi_vid_${file_id}.${videoOnlyFormat.container}`;
+    let audioOnlyFile = `jedi_aud_${file_id}.${audioOnlyFormat.container}`;
+
+    if (directoryName !== undefined) {
+        videoOnlyFile = `${directoryName}/${videoOnlyFile}`;
+        audioOnlyFile = `${directoryName}/${audioOnlyFile}`;
+    }
 
     await new Promise((resolve, reject) => {
         const videoStream = ytdl(url, { format: videoOnlyFormat })
@@ -190,16 +200,15 @@ const downloadVideo = async (url, options) => {
         }).pipe(fs.createWriteStream(audioOnlyFile));;
     });
 
-    process.stdout.write("\n\nProcessing...");
+    process.stdout.write("\n\n");
 
     await new Promise((resolve, reject) => {
-        let dots = ""
         const command = ffmpeg()
             .input(videoOnlyFile)
             .input(audioOnlyFile)
             .outputOptions(["-c:v libx264", "-c:a aac", "-map 0:v:0", "-map 1:a:0"])
             .format("mp4")
-            .save(`${title}.mp4`)
+            .save(newFileName)
             .on("error", (err) => {
                 fs.unlinkSync(videoOnlyFile);
                 fs.unlinkSync(audioOnlyFile);
@@ -207,10 +216,8 @@ const downloadVideo = async (url, options) => {
                 reject(err);
                 throw new Error("DOWNLOAD_FAILED");
             }).on("progress", () => {
-                if (dots.length === 5) dots = "";
                 process.stdout.write("\r\x1B[?25l");
-                process.stdout.write("Processing" + dots);
-                dots += ".";
+                process.stdout.write("Processing...");
             }).on("end", () => {
                 process.stdout.write("\r\x1B[?25l");
                 process.stdout.write("Cleaning up...");
@@ -225,7 +232,7 @@ const downloadVideo = async (url, options) => {
 
 const displayPlaylistInfo = async (url) => {
     const data = await scrapePlaylist(url);
-    
+
     console.info(`\n${ColorLog.label(" Title ")}\n${data.title}`);
     console.info(`\n${ColorLog.label(" Channel Name ")}\n${data.channelName}`);
     console.info(`\n${ColorLog.label(" Channel Link ")}\n${data.channelUrl}`);
@@ -239,16 +246,14 @@ const displayPlaylistInfo = async (url) => {
     console.info(`${ColorLog.bold("│ " + "S.No.".padStart(5) + " │ " + "Title".padEnd(100) + " │ " + "Views".padStart(15) + " │ " + "Uploaded".padStart(15) + " │")}`);
     console.info(`${ColorLog.bold("│_" + '_'.repeat(5) + "_│_" + '_'.repeat(100) + "_│_" + '_'.repeat(15) + "_│_" + '_'.repeat(15) + "_│")}`);
 
-
-    let ind = 1;
-    for (const video of data.videos) {
-        let { title, viewCount, uploaded } = video;
-        if (title.length > 100) title = title.substring(0, 95) + "...";
+    for (let i = 0 ; i < data.videos.length ; i++) {
+        let { title, viewCount, uploaded } = data.videos[i];
+        if (title.length > 100) {
+            title = title.substring(0, 95) + "...";
+        }
 
         console.info(`${ColorLog.bold("│ " + '\u00A0'.repeat(5) + " │ " + '\u00A0'.repeat(100) + " │ " + '\u00A0'.repeat(15) + " │ " + '\u00A0'.repeat(15) + " │")}`);
-        console.info(`${ColorLog.bold("│ " + ind.toString().padStart(5) + " │ " + title.padEnd(100) + " │ " + viewCount.padStart(15) + " │ " + uploaded.padStart(15) + " │")}`);
-
-        ind++;
+        console.info(`${ColorLog.bold("│ " + (i + 1).toString().padStart(5) + " │ " + title.padEnd(100) + " │ " + viewCount.padStart(15) + " │ " + uploaded.padStart(15) + " │")}`);
     }
     console.info(`${ColorLog.bold("│_" + '_'.repeat(5) + "_│_" + '_'.repeat(100) + "_│_" + '_'.repeat(15) + "_│_" + '_'.repeat(15) + "_│")}`);
 }

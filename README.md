@@ -25,27 +25,54 @@ yarn global add youtube-jedi
 ## Usage
 - **View details of a youtube video**
 
-    ```bash
-    jedi video --info <youtube-video-url>
     ```
+    jedi video --info <video-url>
+    ```
+
+- **View details of a youtube playlist**
+
+    ```
+    jedi playlist --info <playlist-url>
+    ```
+
 - **Download a youtube video**
 
-    ```bash
-    jedi video <youtube-video-url>
     ```
+    jedi video <video-url>
+    ```
+
+- **Download a youtube playlist**
+
+    ```
+    jedi playlist <playlist-url>
+    ```
+
 - **Download a youtube video with a specific quality**
 
-    ```bash
-    jedi video --quality=<quality> <youtube-video-url>
     ```
-- **Download just the audio of a youtube video**
+    jedi video --quality=<quality> <video-url>
+    ```
 
-    ```bash
-    jedi video --audioonly <youtube-video-url>
+- **Download a youtube playlist with a specific quality**
+
     ```
+    jedi playlist --quality=<quality> <playlist-url>
+    ```
+- **Download youtube video as audio**
+
+    ```
+    jedi video --audioonly <video-url>
+    ```
+
+- **Download youtube playlist videos as audios**
+
+    ```
+    jedi playlist --audioonly <playlist-url>
+    ```
+
 - **View help**
 
-    ```bash
+    ```
     jedi --help
     ```
 
@@ -53,9 +80,9 @@ yarn global add youtube-jedi
 
 | Option | Alias | Use | Command syntax |
 | ---- | ------- | ---- | ---- |
-| --info | -i | View details of a youtube video | jedi video --info \<video_url\> |
-| --quality | -q | Download a youtube video with a specific quality | jedi video --quality=\<quality\> \<video_url\> |
-| --audioonly | -ao | Download just the audio of a youtube video | jedi video --audioonly \<video_url\> |
+| --info | -i | View details of a youtube video/playlist | jedi [video/playlist] --info \<url\> |
+| --quality | -q | Download a youtube video/playlist with a specific quality | jedi [video/playlist] --quality=\<quality\> \<url\> |
+| --audioonly | -ao | Download youtube video/playlist as audio/s | jedi [video/playlist] --audioonly \<url\> |
 | --help | -h | View help | jedi --help |
 
 ## License

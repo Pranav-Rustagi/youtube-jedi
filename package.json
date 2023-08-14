@@ -1,7 +1,7 @@
 {
   "name": "youtube-jedi",
-  "version": "1.2.0",
-  "description": "CLI app to download youtube videos with ease",
+  "version": "1.2.1",
+  "description": "CLI app to download youtube videos and playlists with ease",
   "main": "bin/index.js",
   "bin": {
     "jedi": "bin/index.js"
@@ -24,13 +24,15 @@
     "terminal",
     "youtube-dl",
     "ytdl",
+    "ytdl-core",
     "videos",
     "playlists",
-    "youtube-downloader"
+    "youtube-downloader",
+    "youtube-playlist-downloader",
+    "youtube-video-downloader"
   ],
   "author": "Pranav Rustagi",
   "license": "MIT",
-  "install": "npm install -g youtube-jedi",
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "fluent-ffmpeg": "^2.1.2",

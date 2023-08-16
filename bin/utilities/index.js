@@ -1,6 +1,9 @@
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
 const { argv } = process;
-const moduleData = require("../../package.json");
 const { usage, options } = require("../constants");
+const moduleData = require("../../package.json");
 
 class ColorLog {
     static primaryCode = "\x1b[94m";
@@ -144,11 +147,32 @@ const getLatestVersion = async () => {
 }
 
 const checkForUpdate = async () => {
-    const latestVersion = await getLatestVersion();
-    const currentVersion = moduleData.version;
+    try {
+        const userHomeDir = os.homedir();
+        const timeStampFile = path.join(userHomeDir, ".youtube-jedi");
 
-    if (latestVersion !== null && latestVersion !== currentVersion) {
-        console.log(`\n${ColorLog.warn("A new version of youtube-jedi is available!!!")} 😎\n\nRun ${ColorLog.bold(" npm i -g youtube-jedi ")} to update\n`);
+        let lastTimeStamp = 0;
+        if (fs.existsSync(timeStampFile)) {
+            const timeStampData = fs.readFileSync(timeStampFile, "utf-8");
+            lastTimeStamp = JSON.parse(timeStampData).timeStamp;
+        }
+
+        const currentTimeStamp = Date.now();
+
+        if (currentTimeStamp - lastTimeStamp < 86400000) {
+            return;
+        }
+
+        const latestVersion = await getLatestVersion();
+        const currentVersion = moduleData.version;
+
+        fs.writeFileSync(timeStampFile, currentTimeStamp.toString());
+
+        if (latestVersion !== null && latestVersion !== currentVersion) {
+            console.log(`\n${ColorLog.warn("A new version of youtube-jedi is available!!!")} 😎\n\nRun ${ColorLog.bold(" npm i -g youtube-jedi ")} to update\n`);
+        }
+    } catch (err) {
+        console.log(err);
     }
 }
 

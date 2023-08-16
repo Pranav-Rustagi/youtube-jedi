@@ -1,14 +1,10 @@
 # youtube-jedi
 
-## About youtube-jedi
-**youtube-jedi** is a command line interface (CLI) tool for downloading videos from Youtube. 
+## Description
+**youtube-jedi** is a command line interface (CLI) tool for downloading Youtube videos and playlists directly from your terminal. 
 
-Want to choose the quality of the video you download? Want to download only the audio? 
+From downloading a single video to downloading a whole playlist alongside configuring options of downloads, **youtube-jedi** has got you covered!
 
-**youtube-jedi** got you!
-
-## Prerequisites
-- [Node.js](https://nodejs.org/en/) 
 
 ## Installation
 

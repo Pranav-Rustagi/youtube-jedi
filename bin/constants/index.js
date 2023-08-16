@@ -1,7 +1,7 @@
 const usage = [{
     cmd: "[video/playlist] --info <url>",
     desc: "View details of a youtube video/playlist"
-},{
+}, {
     cmd: "[video/playlist] [options] <url>",
     desc: "Download a youtube video/playlist"
 }, {

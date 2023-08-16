@@ -19,15 +19,14 @@ const scrapePlaylist = async (url) => {
         const browser = await puppeteer.launch({ headless: "new" });
         const page = (await browser.pages())[0];
         await page.goto(url);
-        
+
         const titleSelector = "#text";
         const channelNameSelector = "#owner-text > a";
         const metaSelector = ".metadata-stats.style-scope.ytd-playlist-byline-renderer yt-formatted-string";
         const videoCountSelector = `${metaSelector}:nth-child(2) span:first-child`;
         const viewCountSelector = `${metaSelector}:nth-child(4)`;
         const lastUpdatedSelector = `${metaSelector}:nth-child(6) span:last-child`;
-        
-        
+
         const playlistData = {};
         playlistData.title = await getText(page, titleSelector);
         playlistData.channelName = await getText(page, channelNameSelector);
@@ -37,11 +36,11 @@ const scrapePlaylist = async (url) => {
         playlistData.lastUpdated = await getText(page, lastUpdatedSelector);
 
         playlistData.videos = [];
-        for(let i = 1 ; i <= +playlistData.videoCount ; i++) {
+        for (let i = 1; i <= +playlistData.videoCount; i++) {
             await page.evaluate(() => {
                 window.scrollBy(0, window.innerHeight);
             });
-            
+
             const videoBlockSelector = `ytd-playlist-video-renderer:nth-child(${i})`;
             const videoTitleSelector = `${videoBlockSelector} #video-title`;
             const videoViewSelector = `${videoBlockSelector} #video-info > span:nth-child(1)`;

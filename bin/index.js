@@ -6,7 +6,7 @@ const { displayVideoInfo, downloadVideo, displayPlaylistInfo, downloadPlaylist }
 (async () => {
     try {
         process.stdout.write("\x1B[?25l");
-        
+
         await checkForUpdate();
 
         const args = parseArgv();
@@ -23,7 +23,7 @@ const { displayVideoInfo, downloadVideo, displayPlaylistInfo, downloadPlaylist }
                 await downloadVideo(args.url, args.flags);
                 console.log();
             }
-        } else if(args.type === "playlist") {
+        } else if (args.type === "playlist") {
             if (args.flags.info) {
                 await displayPlaylistInfo(args.url);
             } else {

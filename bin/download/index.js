@@ -246,7 +246,7 @@ const displayPlaylistInfo = async (url) => {
     console.info(`${ColorLog.bold("│ " + "S.No.".padStart(5) + " │ " + "Title".padEnd(100) + " │ " + "Views".padStart(15) + " │ " + "Uploaded".padStart(15) + " │")}`);
     console.info(`${ColorLog.bold("│_" + '_'.repeat(5) + "_│_" + '_'.repeat(100) + "_│_" + '_'.repeat(15) + "_│_" + '_'.repeat(15) + "_│")}`);
 
-    for (let i = 0 ; i < data.videos.length ; i++) {
+    for (let i = 0; i < data.videos.length; i++) {
         let { title, viewCount, uploaded } = data.videos[i];
         if (title.length > 100) {
             title = title.substring(0, 95) + "...";
@@ -259,7 +259,17 @@ const displayPlaylistInfo = async (url) => {
 }
 
 const downloadPlaylist = async (url, options) => {
-    console.info("Feature coming soon...");
+    const data = await scrapePlaylist(url);
+
+    const folderName = getFileName(data.title);
+    if (!fs.existsSync(folderName)) {
+        fs.mkdirSync(folderName);
+    }
+
+    for (const video of data.videos) {
+        await downloadVideo(video.url, options, folderName);
+        console.log();
+    }
 }
 
 

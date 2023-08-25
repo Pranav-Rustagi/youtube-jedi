@@ -53,6 +53,11 @@ const parseArgv = () => {
         return args;
     }
 
+    if(argv[2] === "-v" || argv[2] === "--version") {
+        args.flags.version = true;
+        return args;
+    }
+
     if (argvLen < 4) {
         throw new Error("INVALID_CMD");
     }

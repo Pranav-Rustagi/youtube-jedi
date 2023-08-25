@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const { parseArgv, ColorLog, checkForUpdate, showHelp } = require("./utilities");
+const moduleData = require("../package.json");
 const { displayVideoInfo, downloadVideo, displayPlaylistInfo, downloadPlaylist } = require("./download");
 
 (async () => {
@@ -13,6 +14,11 @@ const { displayVideoInfo, downloadVideo, displayPlaylistInfo, downloadPlaylist }
 
         if (args.flags.help) {
             showHelp();
+            return;
+        }
+
+        if(args.flags.version) {
+            console.log(`\n${ColorLog.primary("youtube-jedi", true)} version ${ColorLog.bold(moduleData.version)}`);
             return;
         }
 

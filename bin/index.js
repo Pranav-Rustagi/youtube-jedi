@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const { parseArgv, ColorLog, checkForUpdate, showHelp } = require("./utilities");
 const moduleData = require("../package.json");
+const { parseArgv, checkForUpdate, showHelp, ColorLog } = require("./utilities");
 const { displayVideoInfo, downloadVideo, displayPlaylistInfo, downloadPlaylist } = require("./download");
 
 (async () => {

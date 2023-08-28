@@ -1,12 +1,11 @@
 const fs = require("fs");
 const ytdl = require("ytdl-core");
-const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 const ffmpeg = require('fluent-ffmpeg');
-const { ColorLog, getFileName, getUserInput, getAvailableFormats, plotProgress } = require("../utilities");
-const puppeteer = require("puppeteer");
+const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
 const scrapePlaylist = require("../scraper");
+const { ColorLog, getFileName, getUserInput, getAvailableFormats, plotProgress } = require("../utilities");
 
-ffmpeg.setFfmpegPath(ffmpegPath);
+ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
 const fetchVideoInfo = async (url) => {
     try {
@@ -66,21 +65,17 @@ const downloadVideo = async (url, options, directoryName) => {
     console.info(`\n${ColorLog.bold(`Downloading "${video_data.videoDetails.title}"`)}\n`);
 
     if (options.audioonly) {
-        const audioOnlyFormat = ytdl.chooseFormat(formats, {
-            quality: "highest",
-            filter: "audioonly"
-        });
-
+        const audioOnlyFormat = ytdl.chooseFormat(formats, { quality: "highest", filter: "audioonly" });
         if (audioOnlyFormat === undefined) {
             throw new Error("FILE_NOT_FOUND");
         }
 
+        const toConvert = audioOnlyFormat?.container !== "mp3";
         let filename = `${title}.${audioOnlyFormat.container}`;
+        
         if (directoryName !== undefined) {
             filename = `${directoryName}/${filename}`;
         }
-
-        const toConvert = audioOnlyFormat.container !== "mp3";
 
         await new Promise((resolve, reject) => {
             const audioStream = ytdl(url, { format: audioOnlyFormat }).on("error", (err) => {
@@ -150,22 +145,17 @@ const downloadVideo = async (url, options, directoryName) => {
         return;
     }
 
-
     const videoOnlyFormat = formats.find((format) => {
         return format.hasVideo && format.hasAudio === false && format.qualityLabel === options.quality;
     });
 
-    const audioOnlyFormat = ytdl.chooseFormat(formats, {
-        quality: "highestaudio",
-        filter: "audioonly"
-    });
+    const audioOnlyFormat = ytdl.chooseFormat(formats, { quality: "highestaudio", filter: "audioonly" });
 
     if (videoOnlyFormat === undefined || audioOnlyFormat === undefined) {
         throw new Error("RESOLUTION_NOT_SUPPORTED");
     }
 
     const file_id = getFileName(video_data.videoDetails.videoId);
-
     let videoOnlyFile = `jedi_vid_${file_id}.${videoOnlyFormat.container}`;
     let audioOnlyFile = `jedi_aud_${file_id}.${audioOnlyFormat.container}`;
 
@@ -248,8 +238,8 @@ const displayPlaylistInfo = async (url) => {
 
     for (let i = 0; i < data.videos.length; i++) {
         let { title, viewCount, uploaded } = data.videos[i];
-        if (title.length > 100) {
-            title = title.substring(0, 95) + "...";
+        if (title.length > 95) {
+            title = title.substr(0, 95) + "...";
         }
 
         console.info(`${ColorLog.bold("│ " + '\u00A0'.repeat(5) + " │ " + '\u00A0'.repeat(100) + " │ " + '\u00A0'.repeat(15) + " │ " + '\u00A0'.repeat(15) + " │")}`);
@@ -271,7 +261,6 @@ const downloadPlaylist = async (url, options) => {
         console.log();
     }
 }
-
 
 module.exports = {
     displayVideoInfo,

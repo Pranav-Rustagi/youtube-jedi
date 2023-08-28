@@ -1,7 +1,6 @@
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
-const { argv } = process;
 const { usage, options } = require("../constants");
 const moduleData = require("../../package.json");
 
@@ -15,73 +14,43 @@ class ColorLog {
     static boldCode = "\x1b[1m";
     static warningCode = "\x1b[93m";
 
-    static bold(msg) {
-        return `${this.boldCode}${msg}${this.resetCode}`;
-    }
-
-    static label(msg) {
-        return `${this.bgPrimaryCode}${this.boldCode}${msg}${this.resetCode}`;
-    }
-
-    static primary(msg, bold = false) {
-        return `${this.primaryCode}${bold ? this.boldCode : ""}${msg}${this.resetCode}`;
-    }
-
-    static error(msg, bold = false) {
-        return `${this.errorCode}${bold ? this.boldCode : ""}${msg}${this.resetCode}`;
-    }
-
-    static success(msg, bold = false) {
-        return `${this.successCode}${bold ? this.boldCode : ""}${msg}${this.resetCode}`;
-    }
-
-    static warn(msg) {
-        return `${this.warningCode}${msg}${this.resetCode}`;
-    }
-
-    static bgGray(msg) {
-        return `${this.bgGrayCode}${msg}${this.resetCode}`;
-    }
+    static bold(msg) { return `${this.boldCode}${msg}${this.resetCode}`; }
+    static label(msg) { return `${this.bgPrimaryCode}${this.boldCode}${msg}${this.resetCode}`; }
+    static primary(msg, bold = false) { return `${this.primaryCode}${bold ? this.boldCode : ""}${msg}${this.resetCode}`; }
+    static error(msg, bold = false) { return `${this.errorCode}${bold ? this.boldCode : ""}${msg}${this.resetCode}`; }
+    static success(msg, bold = false) { return `${this.successCode}${bold ? this.boldCode : ""}${msg}${this.resetCode}`; }
+    static warn(msg) { return `${this.warningCode}${msg}${this.resetCode}`; }
+    static bgGray(msg) { return `${this.bgGrayCode}${msg}${this.resetCode}`; }
 }
 
 const parseArgv = () => {
     const args = { flags: { help: false, info: false, audioonly: false } };
-    const argvLen = argv.length;
+    const argvLen = process.argv.length;
 
-    if (argvLen == 2 || argv[2] === "-h" || argv[2] === "--help") {
+    if (argvLen == 2 || process.argv[2] === "-h" || process.argv[2] === "--help") {
         args.flags.help = true;
         return args;
     }
 
-    if(argv[2] === "-v" || argv[2] === "--version") {
+    if(process.argv[2] === "-v" || process.argv[2] === "--version") {
         args.flags.version = true;
         return args;
     }
 
-    if (argvLen < 4) {
+    if (argvLen < 4 || (process.argv[2] !== "video" && process.argv[2] !== "playlist")) {
         throw new Error("INVALID_CMD");
     }
 
-    if (argv[2] !== "video" && argv[2] !== "playlist") {
-        throw new Error("INVALID_CMD");
-    }
-
-    args.type = argv[2];
-    args.url = argv[argvLen - 1];
+    args.type = process.argv[2];
+    args.url = process.argv[argvLen - 1];
 
     for (let i = 3; i < argvLen - 1; i++) {
-        const [flagName, flagValue] = argv[i].split("=");
+        const [flagName, flagValue] = process.argv[i].split("=");
 
         if (flagName === "-i" || flagName === "--info") {
-            if (flagValue === undefined) {
-                args.flags.info = true;
-                return args;
-            }
-            throw new Error("INVALID_CMD");
+            args.flags.info = true;
         } else if (flagName === "-q" || flagName === "--quality") {
-            if (flagValue === undefined) {
-                throw new Error("INVALID_CMD");
-            }
+            if (flagValue === undefined) { throw new Error("INVALID_CMD"); }
             args.flags.quality = flagValue;
         } else if (flagName === "-ao" || flagName === "--audioonly") {
             args.flags.audioonly = true;
@@ -115,7 +84,7 @@ const getUserInput = async (question) => {
         output: process.stdout
     });
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         readline.question(question, (answer) => {
             readline.close();
             resolve(answer);
@@ -195,7 +164,6 @@ module.exports = {
     getFileName,
     getUserInput,
     getAvailableFormats,
-    getLatestVersion,
     checkForUpdate,
     showHelp,
     plotProgress,

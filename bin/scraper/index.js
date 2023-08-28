@@ -17,7 +17,7 @@ const getUrl = async (page, selector) => {
 const scrapePlaylist = async (url) => {
     try {
         const browser = await puppeteer.launch({ headless: "new" });
-        const page = (await browser.pages())[0];
+        const page = await browser.newPage();
         await page.goto(url);
 
         const titleSelector = "#text";
@@ -54,7 +54,6 @@ const scrapePlaylist = async (url) => {
 
             playlistData.videos.push(videoData);
         }
-
 
         await browser.close();
         return playlistData;

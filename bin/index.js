@@ -6,6 +6,7 @@ const { displayVideoInfo, downloadVideo, displayPlaylistInfo, downloadPlaylist }
 
 (async () => {
     try {
+        process.env["YTDL_NO_UPDATE"] = true;
         process.stdout.write("\x1B[?25l");
 
         await checkForUpdate();
@@ -17,7 +18,7 @@ const { displayVideoInfo, downloadVideo, displayPlaylistInfo, downloadPlaylist }
             return;
         }
 
-        if(args.flags.version) {
+        if (args.flags.version) {
             console.log(`\n${ColorLog.primary("youtube-jedi", true)} version ${ColorLog.bold(moduleData.version)}`);
             return;
         }

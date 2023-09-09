@@ -1,6 +1,6 @@
 {
   "name": "youtube-jedi",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "CLI app to download youtube videos and playlists with ease",
   "main": "bin/index.js",
   "bin": {
@@ -37,6 +37,6 @@
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "fluent-ffmpeg": "^2.1.2",
     "puppeteer": "^21.0.3",
-    "ytdl-core": "^4.11.5"
+    "ytdl-core": "^4.10.0"
   }
 }

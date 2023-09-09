@@ -9,7 +9,6 @@ ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
 const fetchVideoInfo = async (url) => {
     try {
-        process.env["YTDL_NO_UPDATE"] = true;
         const videoId = ytdl.getURLVideoID(url);
         if (ytdl.validateURL(url) && ytdl.validateID(videoId)) {
             const info = await ytdl.getInfo(url);
@@ -19,7 +18,6 @@ const fetchVideoInfo = async (url) => {
         if (err.code === "ENOTFOUND") {
             throw new Error("ENOTFOUND");
         } else {
-            // console.log(err);
             throw new Error("INVALID_URL");
         }
     }
@@ -72,7 +70,7 @@ const downloadVideo = async (url, options, directoryName) => {
 
         const toConvert = audioOnlyFormat?.container !== "mp3";
         let filename = `${title}.${audioOnlyFormat.container}`;
-        
+
         if (directoryName !== undefined) {
             filename = `${directoryName}/${filename}`;
         }

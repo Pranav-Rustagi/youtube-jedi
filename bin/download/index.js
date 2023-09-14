@@ -70,6 +70,10 @@ const downloadVideo = async (url, options, directoryName) => {
 
         const toConvert = audioOnlyFormat?.container !== "mp3";
         let filename = `${title}.${audioOnlyFormat.container}`;
+        
+        if(toConvert) {
+            filename = `.jedi${filename}`;
+        }
 
         if (directoryName !== undefined) {
             filename = `${directoryName}/${filename}`;
@@ -154,8 +158,8 @@ const downloadVideo = async (url, options, directoryName) => {
     }
 
     const file_id = getFileName(video_data.videoDetails.videoId);
-    let videoOnlyFile = `jedi_vid_${file_id}.${videoOnlyFormat.container}`;
-    let audioOnlyFile = `jedi_aud_${file_id}.${audioOnlyFormat.container}`;
+    let videoOnlyFile = `.jedi_vid_${file_id}.${videoOnlyFormat.container}`;
+    let audioOnlyFile = `.jedi_aud_${file_id}.${audioOnlyFormat.container}`;
 
     if (directoryName !== undefined) {
         videoOnlyFile = `${directoryName}/${videoOnlyFile}`;

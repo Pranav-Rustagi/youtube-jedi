@@ -8,7 +8,7 @@ const execJedi = async () => {
     try {
         process.env["YTDL_NO_UPDATE"] = true;
         process.stdout.write("\x1B[?25l");
-
+        
         const jedi = await Jedi.emerge();
         await jedi.execute();
 

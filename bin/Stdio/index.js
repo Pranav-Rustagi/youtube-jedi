@@ -2,6 +2,8 @@
 
 const fs = require("fs");
 const readline = require("readline");
+const Log = require("../Log");
+const Error = require("../Error");
 
 class Stdio {
     static #rl = readline.createInterface({
@@ -32,7 +34,7 @@ class Stdio {
         try {
             fs.writeFileSync(file, data, options);
         } catch (err) {
-            this.print(`\n${Log.style(`Error writing to file: ${file}`, "ERR", "BLD")}\n\n`);
+            throw new Error("FILE_WRITE_ERROR", null, "Failed to write to timestamp file");
         }
     }
 

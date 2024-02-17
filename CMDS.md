@@ -4,11 +4,12 @@
 
 - jedi help
 - jedi update
+- jedi version
 - jedi info \<url>
-- jedi download \[flags\] \<url>
+- jedi download \<url> \[options]
 
-## jedi flags
+## jedi options
 
-- audioonly
+- audio
 - quality
-- 
+- format

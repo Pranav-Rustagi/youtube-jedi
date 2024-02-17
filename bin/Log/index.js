@@ -1,7 +1,7 @@
 "use strict";
 
 class Log {
-    static #codes = {
+    static codes = {
         "BLD": "\x1b[1m",
         "RST": "\x1b[0m",
         "BGP": "\x1b[104m",
@@ -13,8 +13,8 @@ class Log {
     };
 
     static style(msg, ...styles) {
-        const codes = styles.map(styleCode => Log.#codes[styleCode]).join("");
-        return `${codes}${msg}${Log.#codes["RST"]}`;
+        const codes = styles.map(styleCode => Log.codes[styleCode]).join("");
+        return `${codes}${msg}${Log.codes["RST"]}`;
     }
 }
 

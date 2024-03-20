@@ -2,7 +2,6 @@
 
 const fs = require("fs");
 const readline = require("readline");
-const Log = require("../Log");
 const Error = require("../Error");
 
 class Stdio {

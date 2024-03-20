@@ -6,8 +6,9 @@ const { spawn } = require('child_process');
 const Log = require('../Log');
 const Stdio = require('../Stdio');
 const Error = require('../Error');
-const { getLatestVersion } = require('../helpers');
 const { version: localVersion } = require('./../../package.json');
+const Scraper = require('../Scraper');
+const { secondsToTimeStr, formattedDate } = require('../helpers');
 
 class Jedi {
     #type;
@@ -45,8 +46,8 @@ class Jedi {
         const query_params = {};
 
         const url = args[1];
-        const yt_video_regex = /^https:\/\/(?:www\.)?(?:m\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11}).*$/;
-        const yt_playlist_regex = /^https:\/\/(?:www\.)?(?:m\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)(?:playlist\?|.*?[?&]list=)([a-zA-Z0-9_-]{34}).*$/;
+        const yt_video_regex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})$/;
+        const yt_playlist_regex = /^(https?:\/\/)?(www\.)?(youtube\.com\/playlist\?list=|youtu\.be\/)([a-zA-Z0-9_-]+)(?:&\S*)?$/;
 
         if (yt_video_regex.test(url) || yt_playlist_regex.test(url)) {
             query_params.url = url;
@@ -87,6 +88,18 @@ class Jedi {
     }
 
 
+    // Fetches latest version available on NPM
+    async #getLatestVersion () {
+        try {
+            const res = await fetch("https://registry.npmjs.com/youtube-jedi/latest");
+            const data = await res.json();
+            return data.version;
+        } catch (err) {
+            return null;
+        }
+    }
+
+
     // Performs check whether jedi version on local system is up to date with the latest version available on NPM
     // Displays update message if not found up to date
     async #checkForUpdate() {
@@ -95,17 +108,18 @@ class Jedi {
             const timeStampFile = path.join(userHomeDir, ".youtube-jedi");
             const lastTimeStamp = Stdio.readFromFile(timeStampFile, parseInt) ?? 0;
             const currentTime = Date.now();
-
+            
             if (currentTime - lastTimeStamp > 86400000) {
-                const latestVersion = await getLatestVersion();
+                const latestVersion = await this.#getLatestVersion();
 
-                Stdio.writeToFile(timeStampFile, currentTime.toString(), { mode: 0o400 });
+                Stdio.writeToFile(timeStampFile, currentTime.toString());
 
                 if (latestVersion !== null && latestVersion !== localVersion) {
                     Stdio.print(`\n${Log.style(`A new version of youtube-jedi is available: v${latestVersion}`, "WRN")}\n\nRun  ${Log.style("jedi update", "PRM", "BLD")}  command to update to the latest version\n\n`);
                 }
             }
         } catch (err) {
+            console.log(err)
             throw new Error("UPDATE_CHECK_FAILED", null, "Something went wrong");
         }
     }
@@ -169,9 +183,48 @@ ${Log.style("Options:", "BLD", "WRN")}
 
 
     // Displays information about the video/playlist URL of which is provided
-    // async #displayInfo () {
+    async #displayInfo () {
+        const scraper = new Scraper(this.#params.type, this.#params.url);
+        const data = await scraper.fetchMediaInfo()
 
-    // }
+        if (this.#params.type === "video") {
+
+            let video_details = `
+${Log.style("Title: ", "BLD", "PRM")} 
+${data.title}\n
+${Log.style("Description: ", "BLD", "PRM")}
+${data.description}\n
+${Log.style("Category: ", "BLD", "PRM")}
+${data.category}\n
+${Log.style("Channel name: ", "BLD", "PRM")}
+${data.author.name}\n
+${Log.style("Channel link: ", "BLD", "PRM")}
+${data.author.channel_url}\n
+${Log.style("Upload date: ", "BLD", "PRM")}
+${formattedDate(data.uploadDate)}\n
+${Log.style("Length: ", "BLD", "PRM")}
+${secondsToTimeStr(data.lengthSeconds)}\n
+`;
+
+            if (data.likes !== null) {
+                video_details += `${Log.style("Likes: ", "BLD", "PRM")}
+${data.likes} likes\n\n`;
+
+                if(data.dislikes !== null) {
+                    video_details += `${Log.style("Dislikes: ", "BLD", "PRM")}${data.dislikes} dislikes\n\n`;
+                }
+            }
+
+            video_details += `${Log.style("Views: ", "BLD", "PRM")}
+${data.viewCount}\n\n`;
+            
+            Stdio.print(video_details);
+
+        } else if (this.#params.type === "playlist") {
+            // const playlistInfo = await scraper_obj.getPlaylistInfo();
+            // Stdio.print(playlistInfo);
+        }
+    }
 
 
     async execute() {
@@ -187,9 +240,9 @@ ${Log.style("Options:", "BLD", "WRN")}
             case "update":
                 await this.#updateJedi();
                 break;
-            // case "info":
-            //     this.#displayInfo();
-            //     break;
+            case "info":
+                await this.#displayInfo();
+                break;
             // case "download":
             //     this.#download();
             //     break;

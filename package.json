@@ -1,7 +1,7 @@
 {
   "name": "youtube-jedi",
   "version": "2.0.0",
-  "description": "CLI app to download youtube videos and playlists with ease",
+  "description": "Command line tool to download youtube videos and playlists",
   "main": "bin/index.js",
   "bin": {
     "jedi": "bin/index.js"
@@ -15,28 +15,21 @@
   },
   "homepage": "https://github.com/Pranav-Rustagi/youtube-jedi",
   "keywords": [
-    "nodejs",
-    "javascript",
-    "cli",
     "youtube",
-    "downloader",
-    "cmd",
-    "terminal",
     "youtube-dl",
     "ytdl",
     "ytdl-core",
-    "videos",
-    "playlists",
+    "video",
+    "playlist",
     "youtube-downloader",
     "youtube-playlist-downloader",
-    "youtube-video-downloader"
+    "youtube-video-downloader",
+    "youtube-dl",
+    "yt-dlp"
   ],
   "author": "Pranav Rustagi",
   "license": "MIT",
   "dependencies": {
-    "@ffmpeg-installer/ffmpeg": "^1.1.0",
-    "fluent-ffmpeg": "^2.1.2",
-    "puppeteer": "^21.0.3",
-    "ytdl-core": "^4.10.0"
+    "ytdl-core": "4.10.0"
   }
 }
